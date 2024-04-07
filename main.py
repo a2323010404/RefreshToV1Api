@@ -730,7 +730,7 @@ def send_text_prompt_and_get_response(messages, api_key, account_id, stream, mod
                     if part["type"] == "text":
                         new_parts.append(part["text"])
                     elif part["type"] == "image_url":
-                        logger.debug(f"image_url: {part['image_url']}")
+                        # logger.debug(f"image_url: {part['image_url']}")
                         file_url = part["image_url"]["url"]
                         if file_url.startswith('data:'):
                             # 处理 base64 编码的文件数据
