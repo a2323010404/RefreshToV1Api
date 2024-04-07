@@ -731,19 +731,23 @@ def send_text_prompt_and_get_response(messages, api_key, account_id, stream, mod
                         new_parts.append(part["text"])
                     elif part["type"] == "image_url":
                         # logger.debug(f"image_url: {part['image_url']}")
-                        file_url = part["image_url"]["url"]
-                        if file_url.startswith('data:'):
-                            # 处理 base64 编码的文件数据
-                            mime_type, base64_data = file_url.split(';')[0], file_url.split(',')[1]
-                            mime_type = mime_type.split(':')[1]
-                            try:
-                                file_content = base64.b64decode(base64_data)
-                            except Exception as e:
-                                logger.error(f"类型为 {mime_type} 的 base64 编码数据解码失败: {e}")
-                                continue
+                        file_url = part["image_url"]
+                        if isinstance(file_url, str):
+                            pass
+                        elif isinstance(file_url, dict) and "url" in file_url:
+                            file_url = file_url["url"]
+                            if file_url.startswith('data:'):
+                                # 处理 base64 编码的文件数据
+                                mime_type, base64_data = file_url.split(';')[0], file_url.split(',')[1]
+                                mime_type = mime_type.split(':')[1]
+                                try:
+                                    file_content = base64.b64decode(base64_data)
+                                except Exception as e:
+                                    logger.error(f"类型为 {mime_type} 的 base64 编码数据解码失败: {e}")
+                                    continue
                         else:
-                            # 处理普通的文件URL
-                            try:
+                            logger.error(f"未知的 image_url 格式: {file_url}")
+                            continue
                                 tmp_user_agent = ua.random
                                 logger.debug(f"随机 User-Agent: {tmp_user_agent}")
                                 tmp_headers = {
